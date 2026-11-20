@@ -1,0 +1,17 @@
+time,latitude,longitude,depth,mag,magType,nst,gap,dmin,rms,net,id,updated,place,type,horizontalError,depthError,magError,magNst,status,locationSource,magSource
+2014-01-20T04:36:16.000Z,-1.99,-78.96,10,4.2,mb,,,,1.85,us,usc000mi05,2014-03-22T00:05:25.000Z,"26 km NNW of Alausí, Ecuador",earthquake,,1.9,0.147,13,reviewed,qui,us
+2014-01-26T05:10:27.220Z,-3.8506,-80.8578,11,5.3,mwb,,26,4.081,0.99,us,usb000m8ad,2022-07-26T05:59:23.166Z,"25 km WNW of Cañaveral, Peru",earthquake,,1.6,0.071,19,reviewed,us,us
+2014-02-21T12:42:08.690Z,0.2182,-79.1133,41.63,4.6,mb,,85,0.662,0.52,us,usc000mvf8,2014-05-07T00:03:05.000Z,"41 km ESE of Rosa Zarate, Ecuador",earthquake,,7.5,0.064,81,reviewed,us,us
+2014-03-14T20:53:53.710Z,-2.0488,-79.6126,96.28,4.9,mb,,42,2.55,0.9,us,usc000nbua,2022-07-26T09:34:17.489Z,"9 km NNW of Milagro, Ecuador",earthquake,,4.5,0.031,352,reviewed,us,us
+2014-03-22T15:47:54.400Z,-2.7245,-79.4977,62.77,4.2,mb,,166,4.517,1.2,us,usc000nyu2,2014-05-24T00:54:40.000Z,"14 km ESE of Naranjal, Ecuador",earthquake,,8.8,0.175,10,reviewed,us,us
+2014-03-25T09:56:31.080Z,-2.2524,-79.2803,35,5.3,mb,,45,4.93,1.1,us,usc000npis,2022-07-26T10:28:45.435Z,"17 km ESE of Coronel Marcelino Maridueña, Ecuador",earthquake,,1.9,0.028,444,reviewed,us,us
+2014-03-25T10:08:34.150Z,-2.1181,-79.1696,35,4.2,mb,,157,5.043,0.93,us,usc000p4qk,2014-05-24T00:54:45.000Z,"30 km ENE of Coronel Marcelino Maridueña, Ecuador",earthquake,,2,0.265,4,reviewed,us,us
+2014-03-25T10:36:00.470Z,-2.1292,-79.1392,35,4.3,mb,,151,5.027,1.11,us,usc000p4pf,2014-05-24T00:54:45.000Z,"near the coast of Ecuador",earthquake,,2,0.122,19,reviewed,us,us
+2014-03-25T15:11:42.840Z,-2.1922,-78.9896,31.54,4.1,mb,,149,4.009,0.58,us,usc000p4pm,2014-05-24T00:54:45.000Z,"15 km W of Alausí, Ecuador",earthquake,,7.6,0.175,10,reviewed,us,us
+2014-06-13T18:10:50.200Z,-1.2024,-80.9912,44.34,4.4,mb,,114,6.436,1.37,us,usb000rrrj,2014-09-12T15:47:09.000Z,"40 km SW of Manta, Ecuador",earthquake,,8.4,0.219,8,reviewed,us,us
+2014-08-03T21:02:39.950Z,-3.9248,-80.9204,16.03,5.4,mwb,,53,8.969,0.64,us,usb000rzpi,2022-07-26T21:25:32.072Z,"24 km NE of Máncora, Peru",earthquake,,3.3,0.041,58,reviewed,us,us
+2014-08-26T21:31:58.600Z,-3.185,-80.9061,24.4,4.4,mb,,168,4.192,0.66,us,usb000s9sa,2014-11-22T02:06:37.000Z,"60 km NNW of Zorritos, Peru",earthquake,9.1,3.2,0.17,19,reviewed,us,us
+2014-10-15T01:25:45.960Z,-2.148,-79.1361,105.35,4.7,mb,,110,2.466,0.63,us,usb000sma2,2022-07-27T04:57:06.310Z,"32 km W of Alausí, Ecuador",earthquake,8.7,7.4,0.047,155,reviewed,us,us
+2014-11-26T11:18:38.280Z,-3.0169,-79.8333,80.4,4.9,mb,,53,9.392,0.64,us,usb000t07x,2022-07-27T08:48:04.784Z,"11 km S of Baláo, Ecuador",earthquake,10.1,3.8,0.035,279,reviewed,us,us
+2014-12-09T16:49:16.830Z,-2.2587,-79.2278,104.55,4.6,mb,,108,2.598,0.84,us,usc000t4zp,2022-07-27T10:05:03.791Z,"22 km NE of La Troncal, Ecuador",earthquake,9.8,6.9,0.061,86,reviewed,us,us
+2014-12-31T17:54:57.570Z,-3.0515,-79.4612,92.26,4.4,mb,,148,3.419,0.7,us,usc000tg00,2022-07-27T18:34:54.523Z,"42 km ESE of Baláo, Ecuador",earthquake,14.9,13.4,0.179,10,reviewed,us,us

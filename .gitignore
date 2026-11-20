@@ -1,2 +1,6 @@
 __pycache__/
 *.pyc
+
+# Dados de treino grandes do exp02 (refazer com experimentos/exp02_ispt_2014/GUIA.md, passos D2 e D5)
+experimentos/exp02_ispt_2014/treino_DET/atr_eq/
+experimentos/exp02_ispt_2014/treino_DET/atr_noise/

@@ -1,0 +1,17 @@
+Disparos STA/LTA no trecho: ['18:06:48.26', '18:08:01.24', '18:09:59.74', '18:10:49.02', '18:12:23.80', '18:12:56.66']
+  P_AI_date      2014-06-13T18:10:49.024688Z
+  pick_prob_max  0.9636
+  det_janela_fim 2014-06-13T18:10:53.024688Z
+  mag_3s         4.573
+  dis_3s         25.4
+  dep_3s         64.6
+  baz_3s         5.4
+  lat_3s         -1.0339
+  lon_3s         -81.0533
+  mag_46s        5.222
+  dis_46s        8.0
+  dep_46s        17.5
+  baz_46s        -24.9
+  lat_46s        -1.1963
+  lon_46s        -81.1052
+Custo: features 44.1 ms/janela | DET 120.2 ms por chamada | DET em lote 0.20 ms/janela

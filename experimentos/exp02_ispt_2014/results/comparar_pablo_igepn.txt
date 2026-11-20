@@ -1,0 +1,11 @@
+Catalogo IG-EPN (arquivo inteiro): 3042 eventos, 2012-01-02 a 2023-09-28, magnitude minima 3.1
+IG-EPN 2014: 216 eventos no Equador; 53 a < 200 km da ISPT; 7 a < 50 km
+IG-EPN < 200 km, por mes: {1: 5, 2: 6, 3: 3, 4: 2, 5: 4, 6: 6, 7: 3, 8: 4, 9: 4, 10: 5, 11: 7, 12: 4}
+
+E3WS do Pablo na ISPT, 2014, por mes: {1: 706, 2: 594, 3: 1122, 4: 1490, 5: 943, 6: 1325, 7: 981, 8: 30, 9: 14, 10: 33, 11: 34, 12: 29}
+  mediana de P_prob   antes / depois de 08/07: 0.86 / 0.93
+  mediana de mag_pred antes / depois de 08/07: 4.22 / 4.15
+  mediana de dis_pred antes / depois de 08/07: 86.39 / 131.45
+
+Deteccoes do E3WS a < 60 s de um evento IG-EPN (< 200 km): antes 28 de 7135 | depois 18 de 166
+Eventos IG-EPN (< 200 km) encontrados pelo E3WS: 43 de 53

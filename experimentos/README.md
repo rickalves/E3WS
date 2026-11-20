@@ -8,16 +8,18 @@ Código e modelos são de Pablo Lara et al. (2023), licença CC BY 4.0.
 - Windows 11, Miniconda, ambiente `E3WS` com Python 3.9.23
 - Versões do README do autor: `xgboost==1.6.1`, `scikit-learn==1.1.1`, `scipy==1.8.1`,
   `obspy==1.3.0`, `python-speech-features==0.6`, `PyGeodesy==23.3.23`
-- Também: `numpy==1.22.4`, `matplotlib==3.5.3`, `joblib`
+- Também: `numpy==1.22.4`, `matplotlib==3.5.3`, `joblib`, `pandas==1.5.3` (treino do detector)
+  e `gdown` (download do Google Drive)
 
 ```
 conda create -n E3WS --override-channels -c conda-forge python=3.9 pip
 conda activate E3WS
-pip install --only-binary=:all: --no-binary=python-speech-features numpy==1.22.4 scipy==1.8.1 xgboost==1.6.1 scikit-learn==1.1.1 obspy==1.3.0 python-speech-features==0.6 PyGeodesy==23.3.23 matplotlib==3.5.3 joblib
+pip install --only-binary=:all: --no-binary=python-speech-features numpy==1.22.4 scipy==1.8.1 xgboost==1.6.1 scikit-learn==1.1.1 obspy==1.3.0 python-speech-features==0.6 PyGeodesy==23.3.23 matplotlib==3.5.3 joblib pandas==1.5.3 gdown
 ```
 
-Se o pip falhar com `CERTIFICATE_VERIFY_FAILED` (antivírus ou proxy interceptando HTTPS),
-acrescente `--use-feature=truststore`.
+Se o pip falhar com `CERTIFICATE_VERIFY_FAILED` (antivírus ou proxy interceptando HTTPS):
+`--use-feature=truststore` **não funciona** com Python 3.9. Veja a solução com o certificado do
+Kaspersky em [exp02_ispt_2014/GUIA.md](exp02_ispt_2014/GUIA.md), passo A1.
 
 ## Modelos baixados
 
@@ -50,5 +52,6 @@ restaure o original com `git checkout -- real_time/results/SLRZ_Canta_M5.6_20220
 | # | Data | O que mudou | Mag. 3 s | Mag. final | Dist. final (km) | BAZ final (°) | Conclusão |
 |---|---|---|---|---|---|---|---|
 | [01](exp01_teste_inicial/) | 2026-11-15 | Nada (configuração padrão) | 5,34 | 5,49 (7 s) | 66,0 | −124,3 | Reproduz a referência do autor |
+| [02](exp02_ispt_2014/) | 2026-11-20 | Estação ISPT, 2014, dados contínuos; evento mb 4,4 de 13/06/2014 | 4,57 | 5,22 (46 s) | 8,0 | −24,9 | O DET da SLRZ não serve na ISPT (ruído 14× menor); treinar DET próprio. Plano no README |
 
 Evento de teste: Canta, M5,6, 07/01/2022, estação SLRZ (Lima, Peru).
