@@ -203,7 +203,8 @@ Para cada dia de treino: apaga [−15 s, +45 s] em volta de cada disparo do STA/
 de 10 s andando de 1 s, descarta janelas com falha ou canal constante e calcula as 140 features.
 O último número (`14`) é quantos processos usar; use menos se quiser usar o PC ao mesmo tempo.
 **Pode ser interrompido e retomado:** cada hora pronta fica em `treino_DET/atr_noise/ISPT/partes/`
-e é pulada na próxima execução. **(~1 h a 1,5 h com 14 processos)**
+e é pulada na próxima execução. **(~1,5 h com 14 processos)**
+**Esperado no fim:** `janelas: total 2592000 | mascaradas (eventos) 2123431 (82%) | ruins 6615 | ruido util 461954`.
 **Saída:** um CSV por dia, `DET_10s_pb_slidding1s_2014DDDto2014DDD_NOISE_ISPT_f7_goodtrim_v16.csv`,
 143 colunas (140 features + `SASPe`, `ISPT`, `0`), mesmo formato dos arquivos do Pablo.
 

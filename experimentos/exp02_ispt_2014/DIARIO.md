@@ -69,5 +69,11 @@ pré e pós-abalos, ainda não conferidos no sismograma.
 - `atr_eq` tp3.00 baixado (549 MB, 167.525 janelas).
 - 30 dias de treino escolhidos (`results/dias_ruido.csv`), entre 10/07 e 27/12.
 - GPU RTX 3050 funciona com o XGBoost 1.6.1 (`gpu_hist`).
-- Cálculo das features de ruído iniciado (GUIA D5).
+- Features de ruído prontas (GUIA D5, ~1,5 h com 14 processos): 2.592.000 janelas nos 30 dias,
+  **82 % mascaradas** pelo STA/LTA, 6.615 descartadas por falha, **461.954 janelas de ruído úteis**
+  (2,2 GB). Por dia: de 2.292 (dia 355) a 39.635. É metade da meta do Pablo (900 mil), mas ainda
+  ~2,8× o número de janelas de terremotos (167 mil). Decisão: treinar com isso e, se a validação
+  mostrar falsos alarmes demais, acrescentar dias ou afrouxar a máscara.
+- Ponto de atenção: a máscara deixa só os trechos mais calmos de cada dia. O detector pode ver
+  pouco do ruído "agitado" (mar forte, ruído impulsivo) e disparar nele. A validação (D7) vai mostrar.
 - `pandas==1.5.3` e `gdown` adicionados ao ambiente.
