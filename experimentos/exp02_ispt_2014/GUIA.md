@@ -221,7 +221,8 @@ Para cada dia de treino:
 O `14` é quantos processos usar; use menos se quiser usar o PC ao mesmo tempo.
 **Pode ser interrompido e retomado:** cada hora pronta fica em `treino_DET/atr_noise/ISPT/partes/`
 e é pulada na próxima execução. **(estimativa: 30–45 min)**
-**Esperado:** ~1.650 janelas úteis por hora → ~950 mil no total (meta: ≥ 900 mil).
+**Esperado (~35 min):** `Janelas: total 1036800 | mascaradas 5547 (0.5%) | ruins 1812 | uteis 1029441`.
+Guarde o log: acrescente `> results\features_ruido_log.txt` ao comando.
 **Saída:** um CSV por dia, `DET_10s_pb_slidding2s_2014DDDto2014DDD_NOISE_ISPT_f7_goodtrim_v16.csv`,
 143 colunas (140 features + `SASPe`, `ISPT`, `0`), mesmo formato dos arquivos do Pablo.
 

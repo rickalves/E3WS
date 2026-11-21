@@ -28,7 +28,7 @@ em cima da zona de SSE, então deve detectar eventos menores e mais próximos.
 - [x] `atr_eq` baixado (GUIA D2)
 - [x] Versão 1 do ruído (só 2º semestre, máscara estrita): 462 mil janelas. Substituída pela v2 por orientação do Pablo
 - [x] Versão 2: 24 dias do ano inteiro escolhidos, 13 com HHE congelado (GUIA D3)
-- [ ] Features de ruído v2, meta ≥ 900 mil janelas (GUIA D5)
+- [x] Features de ruído v2: 1.029.441 janelas úteis em 24 dias, 0,5 % mascaradas (GUIA D5)
 - [ ] Treinar o detector da ISPT (GUIA D6)
 - [ ] Validar o detector em dias fora do treino (GUIA D7)
 - [ ] Rodar 09/07–31/12/2014 inteiro e montar o catálogo

@@ -115,6 +115,13 @@ Mudanças (versão 2):
 - os três scripts reescritos com todas as linhas comentadas;
 - versão 1 guardada em `treino_DET/atr_noise/ISPT_v1_mascara_estrita/` e `results/dias_ruido_v1.csv`.
 
+**Resultado das features de ruído v2** (`results/features_ruido_log.txt`, ~35 min com 14 processos):
+- 1.036.800 janelas nos 24 dias; **5.547 mascaradas (0,5 %)**; 1.812 com falha; **1.029.441 úteis**
+  (4,3 GB), acima da meta de 900 mil;
+- de 0 a 4 eventos fortes apagados por dia; cada dia ficou com ~42–43 mil janelas;
+- todas as janelas dos dias com HHE congelado têm NaN (ex.: dia 59, 42.867 de 42.867); nenhuma nos
+  dias normais (ex.: dia 300). Proporção no treino: 13 dias congelados × 11 normais.
+
 **Consequência para a análise:** com o detector treinado no ano todo, dá para **detectar** no
 1º semestre. Mas a magnitude, a distância e principalmente o back-azimuth usam o HHE, então as
 estimativas de fonte do 1º semestre devem ser tratadas com cautela (ou usar só a contagem de eventos).

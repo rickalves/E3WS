@@ -1,0 +1,52 @@
+Dias de treino: [13, 21, 45, 59, 66, 79, 94, 117, 131, 149, 160, 181, 184, 203, 214, 233, 245, 259, 281, 300, 308, 323, 337, 344]
+  dia  13: 2 eventos fortes apagados
+  dia  21: 0 eventos fortes apagados
+  dia  45: 4 eventos fortes apagados
+  dia  59: 2 eventos fortes apagados
+  dia  66: 0 eventos fortes apagados
+  dia  79: 3 eventos fortes apagados
+  dia  94: 3 eventos fortes apagados
+  dia 117: 2 eventos fortes apagados
+  dia 131: 1 eventos fortes apagados
+  dia 149: 1 eventos fortes apagados
+  dia 160: 2 eventos fortes apagados
+  dia 181: 0 eventos fortes apagados
+  dia 184: 0 eventos fortes apagados
+  dia 203: 0 eventos fortes apagados
+  dia 214: 0 eventos fortes apagados
+  dia 233: 1 eventos fortes apagados
+  dia 245: 2 eventos fortes apagados
+  dia 259: 0 eventos fortes apagados
+  dia 281: 4 eventos fortes apagados
+  dia 300: 0 eventos fortes apagados
+  dia 308: 0 eventos fortes apagados
+  dia 323: 2 eventos fortes apagados
+  dia 337: 3 eventos fortes apagados
+  dia 344: 1 eventos fortes apagados
+Horas a calcular: 576 (passo de 2 s)
+  24/576 horas prontas
+  48/576 horas prontas
+  72/576 horas prontas
+  96/576 horas prontas
+  120/576 horas prontas
+  144/576 horas prontas
+  168/576 horas prontas
+  192/576 horas prontas
+  216/576 horas prontas
+  240/576 horas prontas
+  264/576 horas prontas
+  288/576 horas prontas
+  312/576 horas prontas
+  336/576 horas prontas
+  360/576 horas prontas
+  384/576 horas prontas
+  408/576 horas prontas
+  432/576 horas prontas
+  456/576 horas prontas
+  480/576 horas prontas
+  504/576 horas prontas
+  528/576 horas prontas
+  552/576 horas prontas
+  576/576 horas prontas
+Janelas: total 1036800 | mascaradas 5547 (0.5%) | ruins 1812 | uteis 1029441
+Linhas de ruido gravadas (todos os dias): 1029441
