@@ -122,6 +122,30 @@ Mudanças (versão 2):
 - todas as janelas dos dias com HHE congelado têm NaN (ex.: dia 59, 42.867 de 42.867); nenhuma nos
   dias normais (ex.: dia 300). Proporção no treino: 13 dias congelados × 11 normais.
 
+### 9. Treino do detector v2 (`results/treino_DET_log.txt`, 22,8 min na RTX 3050)
+- Terremotos: 167.525 janelas de 21.778 terremotos (70.193 P, 97.332 S).
+- Ruído: 1.029.441 janelas (557.944 com NaN = HHE congelado); 900 mil sorteadas.
+- Teste 90/10 (10,4 min): 106.155 janelas.
+
+| verdade \ previsto | ruído | P | S |
+|---|---|---|---|
+| ruído (90.000) | 90.000 | 0 | 0 |
+| P (6.705) | 0 | 6.639 | 66 |
+| S (9.450) | 2 | 35 | 9.413 |
+
+  Com limiar 0,80 / 0,90 / 0,95: acerta 98,4 / 98,0 / 97,6 % das janelas P; **nenhuma** janela de
+  ruído vira P (nem com HHE congelado, nem normal).
+- Modelo final (12,0 min): `treino_DET/saved_models/DET_ISPT_Whole_XGB_10tp3.0to3.0each0.5f7_unbalanced_official_v16.joblib` (4,3 MB).
+
+**Cuidado ao interpretar, o resultado está otimista demais:**
+1. o ruído de teste vem dos **mesmos 24 dias** do treino. Com passo de 2 s, janelas vizinhas
+   compartilham 8 s de sinal, então o modelo "já viu" quase o mesmo ruído;
+2. os terremotos do `atr_eq` são de outras estações, com outro ruído de fundo. Separar "ruído da
+   ISPT" de "terremoto de outra estação" é mais fácil do que separar ruído da ISPT de um
+   **microssismo registrado na ISPT**, que é o caso real.
+O teste que importa é o **D7**: rodar o E3WS em dados contínuos de dias de validação, contar os
+alarmes falsos por dia e ver quantos eventos do IG-EPN são encontrados.
+
 **Consequência para a análise:** com o detector treinado no ano todo, dá para **detectar** no
 1º semestre. Mas a magnitude, a distância e principalmente o back-azimuth usam o HHE, então as
 estimativas de fonte do 1º semestre devem ser tratadas com cautela (ou usar só a contagem de eventos).

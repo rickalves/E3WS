@@ -29,7 +29,7 @@ em cima da zona de SSE, então deve detectar eventos menores e mais próximos.
 - [x] Versão 1 do ruído (só 2º semestre, máscara estrita): 462 mil janelas. Substituída pela v2 por orientação do Pablo
 - [x] Versão 2: 24 dias do ano inteiro escolhidos, 13 com HHE congelado (GUIA D3)
 - [x] Features de ruído v2: 1.029.441 janelas úteis em 24 dias, 0,5 % mascaradas (GUIA D5)
-- [ ] Treinar o detector da ISPT (GUIA D6)
+- [x] Treinar o detector da ISPT (GUIA D6): 22,8 min; no teste 90/10, 0 de 90 mil janelas de ruído viraram P (otimista, ver DIARIO item 9)
 - [ ] Validar o detector em dias fora do treino (GUIA D7)
 - [ ] Rodar 09/07–31/12/2014 inteiro e montar o catálogo
 - [ ] Análise da sismicidade e correlação com GNSS

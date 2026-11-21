@@ -239,6 +239,9 @@ python scripts\treinar_DET.py treino_DET > results\treino_DET_log.txt
 
 Opções: `--cpu` (sem GPU), `--sem-teste` (pula o passo 2, metade do tempo), `--ruido N`
 (quantas janelas de ruído; `--ruido 0` usa todas).
+**Esperado (~23 min na RTX 3050):** no teste, ruído 90000/90000 correto; P com recall 0,99;
+`P >= 0.80: acerta 98.4% das janelas P | ruido que vira P: 0.0000%`; modelo salvo com 4,3 MB.
+Esses números são otimistas (o ruído de teste vem dos mesmos dias do treino); a avaliação real é o D7.
 
 ### D7. Validar (a fazer)
 Rodar o E3WS com o detector novo nos dias de `validacao`: contar falsos alarmes por dia e ver

@@ -1,0 +1,26 @@
+Terremotos: 167525 janelas de 21778 terremotos | rotulos: {'S+3.0': 97332, 'P+3.0': 70193}
+Ruido: 1029441 janelas em 24 dias | janelas com algum NaN (HHE congelado): 557944
+
+--- Teste: treino com 961370 janelas, teste com 106155 ---
+treino levou 10.4 min
+Matriz de confusao (linhas = verdade N/P/S; colunas = previsto N/P/S):
+[[90000     0     0]
+ [    0  6639    66]
+ [    2    35  9413]]
+              precision    recall  f1-score   support
+
+       ruido     1.0000    1.0000    1.0000     90000
+           P     0.9948    0.9902    0.9925      6705
+           S     0.9930    0.9961    0.9946      9450
+
+    accuracy                         0.9990    106155
+   macro avg     0.9959    0.9954    0.9957    106155
+weighted avg     0.9990    0.9990    0.9990    106155
+
+P >= 0.80: acerta 98.4% das janelas P | ruido que vira P: 0.0000% (HHE congelado 0.0000%, normal 0.0000%)
+P >= 0.90: acerta 98.0% das janelas P | ruido que vira P: 0.0000% (HHE congelado 0.0000%, normal 0.0000%)
+P >= 0.95: acerta 97.6% das janelas P | ruido que vira P: 0.0000% (HHE congelado 0.0000%, normal 0.0000%)
+
+--- Modelo final: 1067525 janelas (ruido/P/S = [900000, 70193, 97332]) ---
+treino levou 12.0 min
+Modelo salvo em treino_DET\saved_models\DET_ISPT_Whole_XGB_10tp3.0to3.0each0.5f7_unbalanced_official_v16.joblib | tempo total 22.8 min
