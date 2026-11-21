@@ -23,3 +23,5 @@ P >= 0.90: acerta 97.4% das janelas P | ruido que vira P: 0.0000% (HHE congelado
 P >= 0.95: acerta 97.0% das janelas P | ruido que vira P: 0.0000% (HHE congelado nan%, normal 0.0000%)
 
 --- Modelo final: 1067525 janelas (ruido/P/S = [900000, 70193, 97332]) ---
+treino levou 5.6 min
+Modelo salvo em treino_DET\saved_models\DET_ISPT_NZ_Whole_XGB_10tp3.0to3.0each0.5f7_unbalanced_official_v16.joblib | tempo total 11.1 min

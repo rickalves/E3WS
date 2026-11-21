@@ -105,6 +105,7 @@ ns['evento'] = 'ruido'                           # identificador (para a separac
 # As 140 features = colunas do ruido, menos as 3 finais (pb_inst, station, y_label)
 features = [c for c in colunas_ns if c not in ('pb_inst', 'station', 'y_label')]
 assert len(features) == 140 and all(f in eq.columns for f in features), 'as colunas de features nao batem'
+todas_features = list(features)                  # guarda as 140 (para saber, depois, quais janelas tem HHE congelado)
 if SO_NZ:                                        # versao so com N e Z:
     features = [f for f in features if f.startswith(('N_', 'Z_'))]   # fica so com as features N_ e Z_ (90)
     print('Usando so os componentes N e Z: %d features' % len(features))
@@ -131,7 +132,7 @@ if '--sem-teste' not in sys.argv:
     print('Matriz de confusao (linhas = verdade N/P/S; colunas = previsto N/P/S):')
     print(confusion_matrix(verdade, previsto))
     print(classification_report(verdade, previsto, target_names=['ruido', 'P', 'S'], digits=4))
-    congelado = ns_teste[features].isna().any(axis=1).values   # janelas de ruido com NaN = HHE congelado
+    congelado = ns_teste[todas_features].isna().any(axis=1).values   # janelas de ruido com NaN (nas 140) = HHE congelado
     p_ruido = prob[len(eq_teste):, 1]            # prob. de P das janelas de ruido (vem depois dos terremotos no teste)
     for limiar in (0.8, 0.9, 0.95):              # para cada limiar de disparo...
         print('P >= %.2f: acerta %.1f%% das janelas P | ruido que vira P: %.4f%% (HHE congelado %.4f%%, normal %.4f%%)' % (

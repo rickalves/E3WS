@@ -147,6 +147,11 @@ O teste que importa é o **D7**: rodar o E3WS em dados contínuos de dias de val
 alarmes falsos por dia e ver quantos eventos do IG-EPN são encontrados.
 
 ### 10. O detector de 3 componentes não enxerga terremotos com o HHE congelado
+Dias de validação (`scripts/escolher_dias_validacao.py` → `results/dias_validacao.csv`): 13 dias,
+nenhum usado no treino. Grupo A, 6 dias "calmos" (67, 152, 155, 195, 241, 262); grupo B, 7 dias com
+eventos do IG-EPN a < 200 km (2, 5, 164, 183, 199, 213, 248), **9 eventos** ao todo.
+Catálogo de referência: IG-EPN `cat_origen_2012_sep2023.txt`, **só M ≥ ~3,5** (detalhes no GUIA D7).
+
 Teste com `scripts/prob_em_eventos.py` (maior prob. de P e de S de 60 s antes a 120 s depois de
 cada evento IG-EPN a < 200 km):
 

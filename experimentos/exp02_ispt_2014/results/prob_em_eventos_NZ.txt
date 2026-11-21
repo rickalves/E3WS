@@ -1,0 +1,9 @@
+[NZ] dia   2 2014-01-02 08:42:43 M3.9 148 km prof   8 km | max P 0.991 | max S 0.998 | HHE congelado: True
+[NZ] dia   5 2014-01-05 16:29:39 M3.7 184 km prof  63 km | max P 0.639 | max S 0.568 | HHE congelado: True
+[NZ] dia 164 2014-06-13 18:10:42 M4.6  14 km prof   3 km | max P 1.000 | max S 1.000 | HHE congelado: True
+[NZ] dia 164 2014-06-13 19:16:15 M3.8  11 km prof   7 km | max P 1.000 | max S 0.999 | HHE congelado: True
+[NZ] dia 183 2014-07-02 16:10:33 M3.6 151 km prof   9 km | max P 0.513 | max S 0.992 | HHE congelado: True
+[NZ] dia 199 2014-07-18 12:08:36 M4.1 108 km prof   6 km | max P 0.136 | max S 0.971 | HHE congelado: False
+[NZ] dia 213 2014-08-01 10:05:31 M3.9 112 km prof  13 km | max P 0.925 | max S 1.000 | HHE congelado: False
+[NZ] dia 248 2014-09-05 05:38:30 M3.6 104 km prof  49 km | max P 0.052 | max S 0.605 | HHE congelado: False
+[NZ] dia 248 2014-09-05 20:50:33 M3.9  64 km prof  10 km | max P 0.993 | max S 0.999 | HHE congelado: False

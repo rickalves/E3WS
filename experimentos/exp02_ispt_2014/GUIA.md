@@ -243,10 +243,68 @@ Opções: `--cpu` (sem GPU), `--sem-teste` (pula o passo 2, metade do tempo), `-
 `P >= 0.80: acerta 98.4% das janelas P | ruido que vira P: 0.0000%`; modelo salvo com 4,3 MB.
 Esses números são otimistas (o ruído de teste vem dos mesmos dias do treino); a avaliação real é o D7.
 
-### D7. Validar (a fazer)
-Rodar o E3WS com o detector novo nos dias de `validacao`: contar falsos alarmes por dia e ver
-quantos eventos do IG-EPN são encontrados. Antes, o `e3ws_continuo.py` precisa passar a usar as
-funções do Pablo (StationXML) e o detector da ISPT.
+### D6b. Treinar o detector sem o HHE (só N e Z)
+```
+python scripts\treinar_DET.py treino_DET --componentes NZ > results\treino_DET_NZ_log.txt
+```
+Mesmo treino, só com as 90 features dos componentes N e Z. **Por quê:** o detector de 3 componentes
+aprendeu o atalho "HHE congelado = ruído" e não detecta terremotos no 1º semestre (DIARIO item 10).
+O Pablo pediu para testar as duas formas: com o HHE (3C) e sem o HHE (NZ). **(~11 min)**
+**Saída:** `treino_DET/saved_models/DET_ISPT_NZ_..._v16.joblib`.
+
+### D7. Validar os dois detectores
+
+**Catálogo de referência.** Arquivo IG-EPN da pasta do Pablo:
+`D:\Downloads\E3WS_Ecuador\E3WS_Ecuador\old\Catalogo\pb_csv\cat_origen_2012_sep2023.txt`.
+- Tem 3.042 eventos no Equador inteiro, de jan/2012 a set/2023. Colunas usadas: hora de origem,
+  latitude, longitude, profundidade e `magnitude_value_M`.
+- **Só eventos maiores**: a menor magnitude é 3,1, e quase todos têm M ≥ 3,5. O catálogo completo do
+  IG-EPN vai até ~M2 e foi pedido ao Pablo.
+- Em 2014: 216 eventos no país, 53 a < 200 km da ISPT, 7 a < 50 km.
+- Na mesma pasta, sem uso por enquanto: `cat_magnitud_*` (magnitudes por estação), `cat_picks_*`
+  (chegadas das ondas por estação; a ISPT tem só 3 em 2014) e `CatalogoHomogenizado.txt`
+  (Beauval et al., 2013).
+- **Limitação:** este catálogo mede se o detector acha os eventos **maiores**. Ele **não** diz se as
+  detecções pequenas são microssismos reais ou alarmes falsos; para isso, há as figuras do D7c.
+
+O **USGS** só foi usado para o evento do teste C3 e para a lista de telessismos M ≥ 6,5 (passo D3).
+
+**D7a. Escolher os dias de validação** (nenhum entrou no treino):
+```
+python scripts\escolher_dias_validacao.py results\dias_ruido.csv "D:\Downloads\E3WS_Ecuador\E3WS_Ecuador\old\Catalogo\pb_csv\cat_origen_2012_sep2023.txt" results\dias_validacao.csv 3
+```
+- Grupo A, "calmos": 3 por semestre, sorteados entre os dias de `validacao` do D3 (sem evento
+  IG-EPN a < 300 km).
+- Grupo B, "com eventos": os 3 dias de cada semestre com mais eventos IG-EPN a < 200 km, mais o dia
+  164 (2014-06-13).
+
+**Esperado:** 13 dias (6 do grupo A, 7 do grupo B), com **9 eventos** IG-EPN a < 200 km.
+
+Para uma checagem rápida, só em volta desses eventos:
+```
+python scripts\prob_em_eventos.py "D:\...\cat_origen_2012_sep2023.txt" NZ 2 5 164 183 199 213 248
+```
+Troque `NZ` por `3C` para o outro detector.
+
+**D7b. Rodar o E3WS nos dias inteiros**, um dia por processo:
+```
+python scripts\e3ws_dia.py results\dias_validacao.csv results\validacao_NZ 13 0.80 NZ > results\validacao_NZ_log.txt
+python scripts\e3ws_dia.py results\dias_validacao.csv results\validacao_3C 13 0.80 3C > results\validacao_3C_log.txt
+```
+Para cada dia, o script salva `prob_2014DDD.csv.gz` (prob. de ruído/P/S de cada uma das 86.400
+janelas) e `det_2014DDD.csv` (detecções com pick, magnitude, distância, profundidade e BAZ a 3 s e
+a 46 s). O gatilho segue a lógica do `real_time/E3WS_rt.py`. O limiar 0,80 dá o conjunto mais
+amplo; para 0,90 ou 0,95, basta filtrar a coluna `prob_p_media3`. **(~45–60 min por detector)**
+
+**D7c. Avaliar:**
+```
+python scripts\avaliar_validacao.py results\dias_validacao.csv "D:\...\cat_origen_2012_sep2023.txt" results\avaliacao_validacao
+```
+- **"Encontrou o evento"** = existe uma detecção com a onda P entre 5 s antes da hora de origem e
+  (distância ÷ 5,5 km/s) + 15 s depois.
+- Mostra também: detecções por dia (limiares 0,80/0,90/0,95; HHE congelado × normal), a
+  concordância entre os dois detectores e figuras de 12 detecções sorteadas dos dias calmos, para
+  conferir a olho se são terremotos (P e depois S) ou ruído.
 
 ---
 
@@ -265,7 +323,11 @@ funções do Pablo (StationXML) e o detector da ISPT.
 | `scripts/plot_disparos_stalta.py` | D4: figura dos maiores disparos |
 | `scripts/investigar_spikes_hhe.py` | D4: spikes do HHE congelado |
 | `scripts/features_ruido.py` | D5: features de ruído |
-| `scripts/treinar_DET.py` | D6: treino do detector |
+| `scripts/treinar_DET.py` | D6: treino do detector (`--componentes NZ` = sem o HHE) |
+| `scripts/escolher_dias_validacao.py` | D7a: dias de validação |
+| `scripts/prob_em_eventos.py` | D7a: prob. do detector em volta de eventos do catálogo |
+| `scripts/e3ws_dia.py` | D7b: E3WS em dias inteiros (detector 3C ou NZ) |
+| `scripts/avaliar_validacao.py` | D7c: avaliação e figuras |
 | `functions/` | funções do E3WS na versão do Pablo (StationXML) |
 | `pz/` | `pb_ISPT.xml` (StationXML) e PZ de 2014 |
 | `results/` | saídas pequenas (CSV, TXT, PNG) |
