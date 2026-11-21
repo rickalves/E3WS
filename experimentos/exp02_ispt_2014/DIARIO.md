@@ -146,6 +146,33 @@ Mudanças (versão 2):
 O teste que importa é o **D7**: rodar o E3WS em dados contínuos de dias de validação, contar os
 alarmes falsos por dia e ver quantos eventos do IG-EPN são encontrados.
 
+### 10. O detector de 3 componentes não enxerga terremotos com o HHE congelado
+Teste com `scripts/prob_em_eventos.py` (maior prob. de P e de S de 60 s antes a 120 s depois de
+cada evento IG-EPN a < 200 km):
+
+| Dia | Evento IG-EPN | HHE | max P | max S |
+|---|---|---|---|---|
+| 2 | M3,9, 148 km | congelado | 0,005 | 0,000 |
+| 5 | M3,7, 184 km | congelado | 0,001 | 0,000 |
+| 164 | **M4,6, 14 km** | congelado | 0,778 | 0,000 |
+| 164 | M3,8, 11 km | congelado | 0,370 | 0,000 |
+| 183 | M3,6, 151 km | congelado | 0,001 | 0,000 |
+| 199 | M4,1, 108 km | normal | 0,906 | 0,994 |
+| 213 | M3,9, 112 km | normal | 0,982 | 1,000 |
+| 248 | M3,6, 104 km | normal | 0,426 | 0,989 |
+| 248 | M3,9, 64 km | normal | 0,999 | 1,000 |
+
+**Por quê:** no treino, *todas* as janelas com HHE congelado (features NaN) eram ruído, e nenhum
+terremoto do `atr_eq` tinha HHE congelado. O modelo aprendeu o atalho "HHE congelado ⇒ ruído".
+O teste 90/10 não percebeu isso porque também não tinha terremotos com HHE congelado.
+**Lição:** um modelo aprende qualquer diferença sistemática entre as classes, inclusive defeitos.
+
+**Solução:** um segundo detector, **`DET_ISPT_NZ`**, só com as 90 features dos componentes N e Z
+(45 + 45). As features só do E (45) e as que combinam os 3 componentes (`lambda_1`, `lambda_ratio`,
+`EV_E`, `EV_N`, `EV_Z`) ficam de fora. Não precisa recalcular nada: as features N_ e Z_ do ruído
+já estão nos CSVs. Vantagem para a pergunta da pesquisa: **mesma sensibilidade o ano todo**, sem
+uma "mudança" artificial em 08/07. `treinar_DET.py --componentes NZ`; log em `results/treino_DET_NZ_log.txt`.
+
 **Consequência para a análise:** com o detector treinado no ano todo, dá para **detectar** no
 1º semestre. Mas a magnitude, a distância e principalmente o back-azimuth usam o HHE, então as
 estimativas de fonte do 1º semestre devem ser tratadas com cautela (ou usar só a contagem de eventos).

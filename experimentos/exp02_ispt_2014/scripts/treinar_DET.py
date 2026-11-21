@@ -10,10 +10,13 @@ Acrescimo didatico: antes do modelo final, treina com 90 % dos dados e testa nos
 (terremotos inteiros nunca vistos e ruido nunca visto), para medir os acertos e os falsos alarmes.
 
 Uso (a partir de experimentos/exp02_ispt_2014):
-  python scripts/treinar_DET.py treino_DET [--cpu] [--sem-teste] [--ruido N]
-    --cpu        treina no processador (sem GPU; bem mais lento)
-    --sem-teste  pula o teste 90/10 (metade do tempo)
-    --ruido N    quantas janelas de ruido usar (padrao 900000; 0 = todas)
+  python scripts/treinar_DET.py treino_DET [--cpu] [--sem-teste] [--ruido N] [--componentes NZ]
+    --cpu            treina no processador (sem GPU; bem mais lento)
+    --sem-teste      pula o teste 90/10 (metade do tempo)
+    --ruido N        quantas janelas de ruido usar (padrao 900000; 0 = todas)
+    --componentes NZ usa so as 90 features dos componentes N e Z (sem nada do HHE).
+                     Motivo: com o HHE congelado (jan-jul/2014), o detector de 3 componentes aprendeu
+                     o atalho "HHE congelado = ruido" e nao detecta terremotos nesse periodo (DIARIO item 10).
 """
 import sys                                       # argumentos da linha de comando
 import os                                        # caminhos de arquivos
@@ -33,6 +36,7 @@ np.random.seed(30002)                            # semente fixa: o resultado e r
 PASTA = sys.argv[1]                              # pasta treino_DET
 TREE = "hist" if "--cpu" in sys.argv else "gpu_hist"   # metodo do XGBoost: GPU (padrao) ou CPU
 N_RUIDO = int(sys.argv[sys.argv.index("--ruido") + 1]) if "--ruido" in sys.argv else 900000   # baseline do Pablo
+SO_NZ = "--componentes" in sys.argv and sys.argv[sys.argv.index("--componentes") + 1].upper() == "NZ"   # so N e Z?
 
 # Colunas que o Pablo remove das features de terremotos (o ruido ja vem sem elas): 172 - 32 = 140
 DEL_COL = ['lambda_2', 'lambda_3', 'E_maxturnpoints_t', 'N_maxturnpoints_t', 'Z_maxturnpoints_t',
@@ -101,6 +105,9 @@ ns['evento'] = 'ruido'                           # identificador (para a separac
 # As 140 features = colunas do ruido, menos as 3 finais (pb_inst, station, y_label)
 features = [c for c in colunas_ns if c not in ('pb_inst', 'station', 'y_label')]
 assert len(features) == 140 and all(f in eq.columns for f in features), 'as colunas de features nao batem'
+if SO_NZ:                                        # versao so com N e Z:
+    features = [f for f in features if f.startswith(('N_', 'Z_'))]   # fica so com as features N_ e Z_ (90)
+    print('Usando so os componentes N e Z: %d features' % len(features))
 
 # === 3. Teste 90/10 (opcional) ===
 if '--sem-teste' not in sys.argv:
@@ -140,6 +147,7 @@ t = time.time()                                  # cronometro
 m.fit(dados[features].values, dados['y_label'].values.astype(int))   # TREINA com tudo
 print('treino levou %.1f min' % ((time.time() - t) / 60))
 os.makedirs(os.path.join(PASTA, 'saved_models'), exist_ok=True)   # cria a pasta de modelos
-nome = os.path.join(PASTA, 'saved_models', 'DET_ISPT_Whole_XGB_10tp3.0to3.0each0.5f7_unbalanced_official_v16.joblib')
+nome = os.path.join(PASTA, 'saved_models', 'DET_ISPT%s_Whole_XGB_10tp3.0to3.0each0.5f7_unbalanced_official_v16.joblib'
+                    % ('_NZ' if SO_NZ else ''))   # o modelo NZ ganha "_NZ" no nome
 joblib.dump(m, open(nome, 'wb'), compress=3)     # salva o modelo (compactado)
 print('Modelo salvo em %s | tempo total %.1f min' % (nome, (time.time() - inicio) / 60))
