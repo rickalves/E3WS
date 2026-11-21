@@ -149,7 +149,11 @@ python scripts\caracterizar_evento.py 2014-06-13T18:10:50 > results\caracterizar
 
 ## Parte D: treinar o detector (DET) da ISPT
 
-Período: **2014-07-09 a 2014-12-31**, quando os 3 canais estão bons.
+**Versão 2 (baseline do Pablo, 2026-11-21):** ruído do **ano inteiro** de 2014, inclusive o 1º
+semestre com o HHE congelado e com spikes (o detector precisa aprender que isso também é ruído),
+**≥ 900 mil janelas** de ruído e a **máscara do Pablo**, que só apaga eventos fortes.
+A versão 1 (só 2º semestre, máscara estrita, 462 mil janelas) está no histórico do git (commit
+6ec2698) e os dados dela em `treino_DET/atr_noise/ISPT_v1_mascara_estrita/`. Ver o DIARIO, item 8.
 
 ### D1. Funções e metadados do Pablo
 **Por quê:** o Pablo calcula as features corrigindo o instrumento com o **StationXML**
@@ -179,47 +183,61 @@ cd ..\..
 Para listar os IDs: `python -c "import gdown; [print(f.id, f.path) for f in gdown.download_folder('https://drive.google.com/drive/folders/1YkaV11K1OOwO61H2Q1kQd5GYRD_DABoq', skip_download=True, quiet=True)]"`
 
 ### D3. Escolher os dias de ruído
-**Por quê:** os dias de "ruído" ensinam ao detector como é o silêncio da ilha. Não podem ter terremotos.
+**Por quê:** os dias de "ruído" ensinam ao detector como é o fundo da estação, inclusive os defeitos
+do sensor (HHE congelado e spikes). Não podem ter terremotos grandes.
 ```
-python scripts\escolher_dias_ruido.py "D:\Downloads\E3WS_Ecuador\E3WS_Ecuador\old\Catalogo\pb_csv\cat_origen_2012_sep2023.txt" results\usgs_mundo_M6.5_2014s2.csv results\dias_ruido.csv 30 > results\dias_ruido_log.txt
+python scripts\escolher_dias_ruido.py results\cobertura_dados_2014.csv "D:\Downloads\E3WS_Ecuador\E3WS_Ecuador\old\Catalogo\pb_csv\cat_origen_2012_sep2023.txt" results\usgs_mundo_M6.5_2014.csv results\dias_ruido.csv 2 > results\dias_ruido_log.txt
 ```
-Para cada dia de 9/jul a 31/dez: mede o ruído e conta disparos do STA/LTA; exclui dias com evento
-IG-EPN a < 300 km (54 dias) ou telessismo M ≥ 6,5 (18 dias). Dos 110 candidatos, escolhe 30
-espalhados no tempo (em cada bloco, o de menos disparos). **(~3 min)**
-**Saída:** `results/dias_ruido.csv`, coluna `uso` = `treino` (30), `validacao` (80) ou `excluido`.
+Regras: dia completo nos 3 canais; fora o dia 189 (troca do sensor); fora dias com evento IG-EPN a
+< 300 km (96 dias) ou telessismo M ≥ 6,5 (47 dias). Dos 213 candidatos, sorteia **2 por mês** (um por
+quinzena, semente fixa 30002). **(segundos)**
+**Esperado:** `Dias de treino: 24 (13 com HHE congelado, 11 com HHE normal)`.
+**Saída:** `results/dias_ruido.csv`, coluna `uso` = `treino` (24), `validacao` (189) ou `excluido`.
 
-### D4. Ver o que são os disparos do STA/LTA
+### D4. Ver o que são os disparos e os spikes
 ```
 python scripts\plot_disparos_stalta.py 191 results\disparos_stalta_dia191.png 6
+python scripts\investigar_spikes_hhe.py 60 results\spikes_hhe_dia060.png
 ```
-**Esperado:** ~1000 disparos no dia mais calmo; os maiores têm **onda P e depois S**, ou seja, são
-microssismos reais. Por isso o passo seguinte apaga um trecho em volta de cada disparo.
+**Esperado:** no dia 191, os maiores disparos do STA/LTA curto são microssismos reais (P e depois S).
+No dia 60, o HHE fica parado em −8.382.254 contagens (perto do limite do conversor, −8.388.608) e
+tem alguns spikes de menos de 1 s; o HHZ também mostra pulsos curtos.
 
 ### D5. Calcular as features de ruído
 ```
-python scripts\features_ruido.py results\dias_ruido.csv treino_DET\atr_noise\ISPT 14
+python scripts\features_ruido.py results\dias_ruido.csv treino_DET\atr_noise\ISPT 14 2
 ```
-Para cada dia de treino: apaga [−15 s, +45 s] em volta de cada disparo do STA/LTA, recorta janelas
-de 10 s andando de 1 s, descarta janelas com falha ou canal constante e calcula as 140 features.
-O último número (`14`) é quantos processos usar; use menos se quiser usar o PC ao mesmo tempo.
+Para cada dia de treino:
+1. **máscara do Pablo**: STA/LTA recursivo no Z (1–7 Hz, 60 s/240 s, liga 2,8, desliga 0,5);
+   cada evento com menos de 10 min apaga de 60 s antes a 60 s depois. Apaga ~1–10 % do dia.
+   Eventos pequenos e spikes ficam: o detector aprende que são ruído;
+2. janelas de 10 s andando de **2 s** (o `2` no fim do comando; o Pablo usa 1 s);
+3. descarta só janelas com falha de dados ou tamanho errado. **Mantém** as janelas com o HHE
+   congelado (o script original do Pablo descartava). Nelas, 10 das 140 features viram NaN
+   (não dá para calcular, por exemplo, a entropia de um sinal constante). O XGBoost trata NaN
+   como "valor ausente", e o mesmo acontece quando o detector roda nesses dias;
+4. 140 features por janela com a `st_FV` do Pablo (StationXML).
+
+O `14` é quantos processos usar; use menos se quiser usar o PC ao mesmo tempo.
 **Pode ser interrompido e retomado:** cada hora pronta fica em `treino_DET/atr_noise/ISPT/partes/`
-e é pulada na próxima execução. **(~1,5 h com 14 processos)**
-**Esperado no fim:** `janelas: total 2592000 | mascaradas (eventos) 2123431 (82%) | ruins 6615 | ruido util 461954`.
-**Saída:** um CSV por dia, `DET_10s_pb_slidding1s_2014DDDto2014DDD_NOISE_ISPT_f7_goodtrim_v16.csv`,
+e é pulada na próxima execução. **(estimativa: 30–45 min)**
+**Esperado:** ~1.650 janelas úteis por hora → ~950 mil no total (meta: ≥ 900 mil).
+**Saída:** um CSV por dia, `DET_10s_pb_slidding2s_2014DDDto2014DDD_NOISE_ISPT_f7_goodtrim_v16.csv`,
 143 colunas (140 features + `SASPe`, `ISPT`, `0`), mesmo formato dos arquivos do Pablo.
 
 ### D6. Treinar
 ```
-python scripts\treinar_DET.py treino_DET
+python scripts\treinar_DET.py treino_DET > results\treino_DET_log.txt
 ```
-1. junta as janelas de terremotos (rótulos 1 = P, 2 = S) e até 900 mil de ruído (rótulo 0);
-2. **teste**: treina com 90 % e avalia nos 10 % restantes (terremotos nunca vistos), mostrando a
-   matriz de confusão e quantas janelas de ruído viram "P" com limiar 0,8 / 0,9 / 0,95;
+1. junta as janelas de terremotos (rótulos 1 = P, 2 = S) e sorteia **900 mil** de ruído (rótulo 0);
+2. **teste**: treina com 90 % e avalia nos 10 % restantes (terremotos nunca vistos e ruído nunca
+   visto). Mostra a matriz de confusão e quantas janelas de ruído viram "P" com limiar
+   0,8 / 0,9 / 0,95, separando ruído com HHE congelado e normal;
 3. treina o **modelo final** com tudo e salva
    `treino_DET/saved_models/DET_ISPT_Whole_XGB_10tp3.0to3.0each0.5f7_unbalanced_official_v16.joblib`.
 
-Opções: `--cpu` (sem GPU), `--sem-teste` (pula o passo 2, metade do tempo).
-Guarde a saída do terminal: `python scripts\treinar_DET.py treino_DET > results\treino_DET_log.txt`.
+Opções: `--cpu` (sem GPU), `--sem-teste` (pula o passo 2, metade do tempo), `--ruido N`
+(quantas janelas de ruído; `--ruido 0` usa todas).
 
 ### D7. Validar (a fazer)
 Rodar o E3WS com o detector novo nos dias de `validacao`: contar falsos alarmes por dia e ver
@@ -241,6 +259,7 @@ funções do Pablo (StationXML) e o detector da ISPT.
 | `scripts/caracterizar_evento.py` | C3: picker + fonte num evento conhecido |
 | `scripts/escolher_dias_ruido.py` | D3: dias de treino e de validação |
 | `scripts/plot_disparos_stalta.py` | D4: figura dos maiores disparos |
+| `scripts/investigar_spikes_hhe.py` | D4: spikes do HHE congelado |
 | `scripts/features_ruido.py` | D5: features de ruído |
 | `scripts/treinar_DET.py` | D6: treino do detector |
 | `functions/` | funções do E3WS na versão do Pablo (StationXML) |

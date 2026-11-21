@@ -23,10 +23,12 @@ em cima da zona de SSE, então deve detectar eventos menores e mais próximos.
 ## Estado atual
 
 - [x] Ambiente e modelos (GUIA A)
-- [x] Conhecer os dados: canal HHE morto até 08/07/2014 → período analisado: **09/07 a 31/12/2014** (GUIA B)
+- [x] Conhecer os dados: canal HHE congelado (saturado) até 08/07/2014 (GUIA B)
 - [x] Teste com o detector da SLRZ: não serve na ISPT → treinar detector próprio (GUIA C)
-- [x] `atr_eq` baixado e 30 dias de ruído escolhidos (GUIA D2, D3)
-- [x] Features de ruído (GUIA D5): 461.954 janelas úteis em 30 dias (82 % mascaradas)
+- [x] `atr_eq` baixado (GUIA D2)
+- [x] Versão 1 do ruído (só 2º semestre, máscara estrita): 462 mil janelas. Substituída pela v2 por orientação do Pablo
+- [x] Versão 2: 24 dias do ano inteiro escolhidos, 13 com HHE congelado (GUIA D3)
+- [ ] Features de ruído v2, meta ≥ 900 mil janelas (GUIA D5)
 - [ ] Treinar o detector da ISPT (GUIA D6)
 - [ ] Validar o detector em dias fora do treino (GUIA D7)
 - [ ] Rodar 09/07–31/12/2014 inteiro e montar o catálogo

@@ -15,7 +15,12 @@ Explicações curtas, na ordem em que aparecem no trabalho. Volte aqui sempre qu
 - **Taxa de amostragem**: quantas medidas por segundo. A ISPT grava 125 Hz em 2014; o E3WS
   reamostra tudo para 100 Hz.
 - **Canal morto/congelado**: o canal grava sempre o mesmo número. Foi o que aconteceu com o HHE da
-  ISPT de 01/01 a 08/07/2014.
+  ISPT de 01/01 a 08/07/2014: ficou parado em −8.382.254, quase o limite do conversor de 24 bits
+  (−8.388.608). Isso é **saturação**: o sensor "encostou" no limite e não registra mais movimento.
+- **Spike (pico)**: valor absurdo que aparece e some em menos de 1 s. Não é movimento do chão, é
+  defeito eletrônico ou de transmissão. O detector precisa aprender que spike é ruído.
+- **NaN** ("not a number"): valor que não pode ser calculado, por exemplo a entropia de um sinal
+  constante. O XGBoost trata NaN como "informação ausente".
 
 ## Resposta do instrumento
 

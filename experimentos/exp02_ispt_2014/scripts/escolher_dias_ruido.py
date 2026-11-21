@@ -1,77 +1,91 @@
-"""Escolhe os dias de ruido para treinar o detector (DET) da ISPT.
+# -*- coding: utf-8 -*-
+"""PASSO D3 - Escolher os dias de ruido para treinar o detector (DET) da ISPT.
 
-Para cada dia de 2014-07-09 (dia 190) a 2014-12-31 (dia 365):
-  - nivel de ruido: RMS da velocidade no Z, 1-7 Hz (mediana das 24 horas);
-  - n. de disparos de um STA/LTA classico (0,5 s / 10 s, 2-15 Hz, liga 4, desliga 1,5) no Z,
-    um indicador de quantos eventos pequenos existem no dia;
-  - exclusao: dia incompleto, evento IG-EPN a < 300 km da ISPT, telessismo M >= 6,5 (USGS)
-    nesse dia ou nas ultimas 3 h do dia anterior.
-Escolhe N dias de treino (padrao 20): divide o periodo em N blocos e pega, em cada bloco,
-o dia candidato com menos disparos. Os demais candidatos ficam para validacao.
-Obs.: os disparos do STA/LTA na ISPT sao, em boa parte, microssismos reais (P e S visiveis),
-por isso o calculo das features de ruido mascara um trecho em volta de cada disparo.
+Versao 2 (baseline do Pablo): usa o ANO INTEIRO de 2014, inclusive o 1o semestre, em que o canal
+HHE esta congelado e tem spikes. O detector precisa aprender que isso tambem e ruido.
 
-Uso: python escolher_dias_ruido.py <catalogo_igepn_origen.txt> <usgs_mundo.csv> <saida.csv> [N]
+Regras:
+  1. o dia precisa estar completo nos 3 canais (>= 23,9 h de dado);
+  2. fora o dia 189 (08/07/2014), em que o sensor foi trocado de epoca no meio do dia;
+  3. fora dias com evento do catalogo IG-EPN a menos de 300 km da ISPT;
+  4. fora dias com telessismo M >= 6,5 no mundo (USGS) e o dia seguinte se o telessismo foi
+     depois das 21 h (as ondas de superficie duram horas);
+  5. dos dias que sobram, sorteia N POR MES (padrao 2): um da 1a quinzena e um da 2a, para cobrir
+     o ano todo e as duas situacoes do HHE (congelado e normal).
+Os dias candidatos que nao forem sorteados ficam marcados como "validacao".
+
+Uso (a partir de experimentos/exp02_ispt_2014):
+  python scripts/escolher_dias_ruido.py <cobertura.csv> <cat_origen_IGEPN.txt> <usgs_mundo.csv> <saida.csv> [N_por_mes]
+Exemplo:
+  python scripts/escolher_dias_ruido.py results/cobertura_dados_2014.csv ^
+      "D:/Downloads/E3WS_Ecuador/E3WS_Ecuador/old/Catalogo/pb_csv/cat_origen_2012_sep2023.txt" ^
+      results/usgs_mundo_M6.5_2014.csv results/dias_ruido.csv 2
 """
-import sys, csv, os
-import numpy as np, pandas as pd, obspy
-from obspy import UTCDateTime as U
-from obspy.signal.trigger import classic_sta_lta, trigger_onset
-from obspy.geodetics import gps2dist_azimuth
-from concurrent.futures import ProcessPoolExecutor
+import sys                                       # argumentos da linha de comando
+import numpy as np                               # contas e sorteio
+import pandas as pd                              # tabelas
+from obspy.geodetics import gps2dist_azimuth     # distancia entre dois pontos na Terra
 
-B = r"D:\Downloads\ISPT_DATA_SEISMO\2014\EC\ISPT\{c}.D\EC.ISPT..{c}.D.2014.{d:03d}"
-SENS = 1.6794e9  # contagens por m/s (epoca 2014b, HHZ)
-LAT, LON = -1.262263, -81.0748
+LAT, LON = -1.262263, -81.0748                   # posicao da estacao ISPT
+DIA_TROCA = 189                                  # dia juliano da troca de epoca do sensor (08/07/2014)
+SEMENTE = 30002                                  # semente do sorteio (mesma do Pablo): o resultado e sempre igual
 
+# --- Ler os argumentos ---
+arq_cobertura = sys.argv[1]                      # CSV do passo B1 (horas de dado por dia e canal)
+arq_igepn = sys.argv[2]                          # catalogo IG-EPN (origens)
+arq_usgs = sys.argv[3]                           # telessismos M >= 6,5 de 2014 (USGS)
+arq_saida = sys.argv[4]                          # onde salvar a tabela de dias
+n_por_mes = int(sys.argv[5]) if len(sys.argv) > 5 else 2   # quantos dias sortear por mes
 
-def medir(d):
-    st = obspy.read(B.format(c="HHZ", d=d))
-    st.merge(fill_value=0)
-    tr = st[0]
-    horas = tr.stats.npts / tr.stats.sampling_rate / 3600
-    fs = tr.stats.sampling_rate
-    a = tr.copy(); a.detrend("demean"); a.filter("bandpass", freqmin=1, freqmax=7, zerophase=True)
-    x = a.data / SENS
-    n = int(3600 * fs)
-    rms_h = [np.sqrt(np.mean(x[i:i + n] ** 2)) for i in range(0, len(x) - n + 1, n)]
-    b = tr.copy(); b.detrend("demean"); b.filter("bandpass", freqmin=2, freqmax=15)
-    cft = classic_sta_lta(b.data, int(0.5 * fs), int(10 * fs))
-    trig = trigger_onset(cft, 4.0, 1.5)
-    return {"dia": d, "data": str(U(year=2014, julday=d).date), "horas": round(horas, 2),
-            "rms_z_ms": float(np.median(rms_h)), "n_stalta": len(trig)}
+# --- 1. Dias completos nos 3 canais ---
+cob = pd.read_csv(arq_cobertura)                 # uma linha por arquivo (dia x canal)
+horas_min = cob.groupby("dia")["horas"].min()    # para cada dia, o canal com MENOS horas
+dias = pd.DataFrame({"dia": horas_min.index, "horas_min": horas_min.values})   # tabela por dia
+dias["data"] = pd.to_datetime("2014-01-01") + pd.to_timedelta(dias.dia - 1, unit="D")  # dia juliano -> data
+dias["completo"] = dias.horas_min >= 23.9        # regra 1
+dias["troca_sensor"] = dias.dia == DIA_TROCA     # regra 2
+dias["hhe_congelado"] = dias.dia <= DIA_TROCA    # so informativo: HHE congelado ate o dia 189
 
+# --- 2. Eventos do IG-EPN perto da ISPT ---
+cat = pd.read_csv(arq_igepn, comment="#", skipinitialspace=True, index_col=False)   # index_col=False: as linhas tem 1 coluna a mais
+cat.columns = [c.strip() for c in cat.columns]   # tira espacos dos nomes das colunas
+cat["t"] = pd.to_datetime(cat["time_value"].str.strip())   # texto -> data/hora
+cat = cat[cat.t.dt.year == 2014]                 # so 2014
+cat["dist_km"] = [gps2dist_azimuth(LAT, LON, la, lo)[0] / 1000   # distancia ate a ISPT em km
+                  for la, lo in zip(cat.latitude_value, cat.longitude_value)]
+dias_igepn = set(cat[cat.dist_km < 300].t.dt.dayofyear)   # dias com evento a < 300 km
+dias["evento_igepn"] = dias.dia.isin(dias_igepn)  # regra 3
 
-if __name__ == "__main__":
-    cat_file, usgs_file, out = sys.argv[1:4]
-    with ProcessPoolExecutor(12) as ex:
-        R = pd.DataFrame(list(ex.map(medir, range(190, 366))))
+# --- 3. Telessismos ---
+usgs = pd.read_csv(arq_usgs)                     # lista do USGS
+usgs["t"] = pd.to_datetime(usgs.time)            # texto -> data/hora
+dias_tele = set(usgs.t.dt.dayofyear)             # o proprio dia do telessismo
+dias_tele |= set(usgs[usgs.t.dt.hour >= 21].t.dt.dayofyear + 1)   # e o dia seguinte, se foi tarde
+dias["telessismo"] = dias.dia.isin(dias_tele)    # regra 4
 
-    c = pd.read_csv(cat_file, comment="#", skipinitialspace=True, index_col=False)
-    c.columns = [x.strip() for x in c.columns]
-    c["t"] = pd.to_datetime(c["time_value"].str.strip())
-    c = c[(c.t >= "2014-07-01") & (c.t < "2015-01-01")]
-    c["dist"] = [gps2dist_azimuth(LAT, LON, a, b)[0] / 1e3 for a, b in zip(c.latitude_value, c.longitude_value)]
-    dias_cat = set(c[c.dist < 300].t.dt.dayofyear)
+# --- 4. Candidatos = passam em todas as regras ---
+dias["candidato"] = dias.completo & ~dias.troca_sensor & ~dias.evento_igepn & ~dias.telessismo
 
-    u = pd.read_csv(usgs_file)
-    u["t"] = pd.to_datetime(u.time)
-    dias_tele = set(u.t.dt.dayofyear) | set((u[u.t.dt.hour >= 21].t.dt.dayofyear + 1))
+# --- 5. Sorteio: n_por_mes dias por mes, espalhados no mes ---
+rng = np.random.default_rng(SEMENTE)             # gerador de numeros aleatorios com semente fixa
+treino = []                                      # lista dos dias sorteados
+for mes in range(1, 13):                         # para cada mes...
+    cand_mes = dias[dias.candidato & (dias.data.dt.month == mes)].sort_values("dia")   # ...candidatos do mes
+    for parte in np.array_split(cand_mes, n_por_mes):   # ...divide em n_por_mes pedacos (ex.: 2 quinzenas)
+        if len(parte):                           # ...se o pedaco tem algum candidato,
+            treino.append(int(rng.choice(parte.dia.values)))   # ...sorteia um dia dele
 
-    R["evento_igepn"] = R.dia.isin(dias_cat)
-    R["telessismo"] = R.dia.isin(dias_tele)
-    R["candidato"] = (R.horas >= 23.9) & ~R.evento_igepn & ~R.telessismo
+# --- 6. Marcar o uso de cada dia e salvar ---
+dias["uso"] = "excluido"                         # por padrao, excluido
+dias.loc[dias.candidato, "uso"] = "validacao"    # candidatos nao sorteados = validacao
+dias.loc[dias.dia.isin(treino), "uso"] = "treino"   # sorteados = treino
+dias.to_csv(arq_saida, index=False)              # salva a tabela
 
-    cand = R[R.candidato].copy()
-    n_treino = int(sys.argv[4]) if len(sys.argv) > 4 else 20
-    blocos = np.array_split(cand.sort_values("dia"), n_treino)
-    treino = [blk.sort_values("n_stalta").iloc[0].dia for blk in blocos]
-    R["uso"] = np.where(R.dia.isin(treino), "treino", np.where(R.candidato, "validacao", "excluido"))
-    R.to_csv(out, index=False)
-
-    print("dias avaliados:", len(R), "| candidatos:", R.candidato.sum(),
-          "| excluidos: incompleto %d, IG-EPN %d, telessismo %d" % ((R.horas < 23.9).sum(), R.evento_igepn.sum(), R.telessismo.sum()))
-    print("ruido Z (m/s) em todos os dias: p10 %.2e | mediana %.2e | p90 %.2e" % tuple(np.percentile(R.rms_z_ms, [10, 50, 90])))
-    print("disparos STA/LTA por dia: p10 %d | mediana %d | p90 %d" % tuple(np.percentile(R.n_stalta, [10, 50, 90])))
-    print("\nDias de treino:")
-    print(R[R.uso == "treino"][["dia", "data", "rms_z_ms", "n_stalta"]].to_string(index=False))
+# --- 7. Resumo na tela ---
+print("Dias no ano: %d | completos: %d | candidatos: %d" % (len(dias), dias.completo.sum(), dias.candidato.sum()))
+print("Excluidos por: incompleto %d, troca do sensor %d, evento IG-EPN %d, telessismo %d" % (
+    (~dias.completo).sum(), dias.troca_sensor.sum(), dias.evento_igepn.sum(), dias.telessismo.sum()))
+t = dias[dias.uso == "treino"]                   # so os dias de treino
+print("Dias de treino: %d (%d com HHE congelado, %d com HHE normal)" % (
+    len(t), t.hhe_congelado.sum(), (~t.hhe_congelado).sum()))
+print(t[["dia", "data", "hhe_congelado"]].to_string(index=False))

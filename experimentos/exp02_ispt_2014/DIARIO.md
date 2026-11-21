@@ -76,4 +76,46 @@ pré e pós-abalos, ainda não conferidos no sismograma.
   mostrar falsos alarmes demais, acrescentar dias ou afrouxar a máscara.
 - Ponto de atenção: a máscara deixa só os trechos mais calmos de cada dia. O detector pode ver
   pouco do ruído "agitado" (mar forte, ruído impulsivo) e disparar nele. A validação (D7) vai mostrar.
+
+## 2026-11-21
+
+### 8. Orientação do Pablo e versão 2 do treino
+O Pablo orientou:
+- usar **900 mil janelas de ruído** (baseline; pode ser mais);
+- treinar com **o ano todo**: no período do HHE congelado aparecem spikes, e o detector precisa
+  aprender que isso também é ruído.
+
+O que os dados mostram (`scripts/investigar_spikes_hhe.py`, dia 60):
+- o HHE fica parado em **−8.382.254 contagens** em 10.799.681 de 10.799.994 amostras. É quase o
+  limite negativo do conversor de 24 bits (−8.388.608): o canal está **saturado**, não "desligado";
+- 4 spikes no dia, de 0,4 a 0,8 s, com milhões de contagens. Alguns coincidem com falhas curtas de
+  dados (o trecho fica em 0 nos 3 canais);
+- o HHZ e o HHN também mostram pulsos curtos.
+
+Teste das features com o HHE congelado: 10 das 140 features viram NaN (não há como calcular, por
+exemplo, a entropia de um sinal constante); nenhuma vira infinito. O XGBoost aceita NaN.
+
+Comparação das máscaras de eventos num dia (passo D5):
+
+| Máscara | Como funciona | Apaga |
+|---|---|---|
+| v1 (minha) | STA/LTA curto (0,5 s/10 s), limiar 4, apaga [−15 s, +45 s] de cada disparo | **82 %** das janelas |
+| v2 (Pablo, `gen_catag.py`) | STA/LTA longo (60 s/240 s), limiar 2,8, só eventos < 10 min, ±60 s | **~1 %** do dia (dia 191); ~9 % numa hora do dia 59 |
+
+A máscara v1 apagava também os spikes e o ruído impulsivo, justamente o que o detector deve
+aprender a ignorar. A v2 é o baseline do Pablo. Contrapartida: microssismos pequenos entram no
+treino como "ruído", então o detector tende a ser menos sensível aos menores eventos e a dar menos
+alarmes falsos.
+
+Mudanças (versão 2):
+- `escolher_dias_ruido.py`: ano inteiro, 2 dias sorteados por mês → 24 dias (13 com HHE congelado);
+- `features_ruido.py`: máscara do Pablo, passo de 2 s, **mantém** janelas com HHE congelado;
+- `treinar_DET.py`: sorteia 900 mil janelas de ruído e mostra os falsos alarmes separados
+  (HHE congelado × normal);
+- os três scripts reescritos com todas as linhas comentadas;
+- versão 1 guardada em `treino_DET/atr_noise/ISPT_v1_mascara_estrita/` e `results/dias_ruido_v1.csv`.
+
+**Consequência para a análise:** com o detector treinado no ano todo, dá para **detectar** no
+1º semestre. Mas a magnitude, a distância e principalmente o back-azimuth usam o HHE, então as
+estimativas de fonte do 1º semestre devem ser tratadas com cautela (ou usar só a contagem de eventos).
 - `pandas==1.5.3` e `gdown` adicionados ao ambiente.
