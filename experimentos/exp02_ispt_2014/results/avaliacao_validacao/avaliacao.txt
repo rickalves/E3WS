@@ -1,0 +1,31 @@
+=== 1. Eventos do IG-EPN (< 200 km) nos dias de validacao: 9 ===
+               hora  mag  dist_km  prof_km  hhe_congelado  3C_prob  3C_mag46  3C_dis46  NZ_prob  NZ_mag46  NZ_dis46
+2014-01-02 08:42:43  3.9      148     8.09           True    0.000       NaN       NaN    0.945     4.089     111.0
+2014-01-05 16:29:39  3.7      184    63.47           True    0.000       NaN       NaN    0.000       NaN       NaN
+2014-06-13 18:10:42  4.6       14     3.31           True    0.000       NaN       NaN    1.000     4.509      19.1
+2014-06-13 19:16:15  3.8       11     7.42           True    0.000       NaN       NaN    0.976     4.049      24.7
+2014-07-02 16:10:33  3.6      151     9.38           True    0.000       NaN       NaN    0.000       NaN       NaN
+2014-07-18 12:08:36  4.1      108     6.00          False    0.000       NaN       NaN    0.000       NaN       NaN
+2014-08-01 10:05:31  3.9      112    12.86          False    0.842     4.040     113.8    0.868     4.040     113.8
+2014-09-05 05:38:30  3.6      104    49.29          False    0.000       NaN       NaN    0.000       NaN       NaN
+2014-09-05 20:50:33  3.9       64    10.00          False    0.992     3.868      76.6    0.872     3.868      76.6
+limiar 0.80: 3C achou 2/9 | NZ achou 5/9
+limiar 0.90: 3C achou 1/9 | NZ achou 3/9
+limiar 0.95: 3C achou 1/9 | NZ achou 2/9
+
+=== 2. Deteccoes por dia (media) ===
+detector                      3C             NZ          
+limiar                      0.80 0.90 0.95 0.80 0.90 0.95
+grupo         hhe_congelado                              
+A_calmo       False          0.3  0.3  0.0  0.3  0.0  0.0
+              True           0.0  0.0  0.0  0.0  0.0  0.0
+B_com_eventos False          1.0  0.7  0.7  1.0  0.0  0.0
+              True           0.2  0.2  0.2  1.5  1.5  0.8
+
+=== 3. Concordancia (P a menos de 5 s), limiar 0,80 ===
+5 de 5 deteccoes do 3C tambem aparecem no NZ
+5 de 10 deteccoes do NZ tambem aparecem no 3C
+
+Figura: results/avaliacao_validacao\amostra_deteccoes_3C.png
+
+Figura: results/avaliacao_validacao\amostra_deteccoes_NZ.png

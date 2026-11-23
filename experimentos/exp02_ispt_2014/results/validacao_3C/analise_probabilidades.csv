@@ -1,0 +1,14 @@
+dia,grupo,hhe_congelado,P>=0.5,P>=0.8,S>=0.8,candidatos,deteccoes,travado_h,ruido>=0.99_%,ruido_mediana
+67,A_calmo,True,0,0,0,0,0,0.0,100.0,1.0
+152,A_calmo,True,0,0,0,0,0,0.0,100.0,1.0
+155,A_calmo,True,0,0,0,0,0,0.0,100.0,1.0
+195,A_calmo,False,4,4,0,1,1,0.0,100.0,1.0
+241,A_calmo,False,0,0,0,0,0,0.0,100.0,1.0
+262,A_calmo,False,0,0,0,0,0,0.0,100.0,1.0
+2,B_com_eventos,True,0,0,0,0,0,0.0,100.0,1.0
+5,B_com_eventos,True,0,0,0,0,0,0.0,100.0,1.0
+164,B_com_eventos,True,6,3,4,1,1,0.0,99.5,1.0
+183,B_com_eventos,True,0,0,0,0,0,0.0,100.0,1.0
+199,B_com_eventos,False,1,1,2,0,0,0.0,99.9,1.0
+213,B_com_eventos,False,8,5,23,2,2,0.02,99.8,1.0
+248,B_com_eventos,False,3,3,34,1,1,0.02,99.8,1.0

@@ -306,6 +306,27 @@ python scripts\avaliar_validacao.py results\dias_validacao.csv "D:\...\cat_orige
   concordância entre os dois detectores e figuras de 12 detecções sorteadas dos dias calmos, para
   conferir a olho se são terremotos (P e depois S) ou ruído.
 
+**Esperado (limiar 0,80):** 3C acha 2/9 eventos e NZ acha 5/9. O 3C dá 5 detecções e o NZ dá 10
+(resultados completos no `RELATORIO_validacao.md`).
+
+**D7d. Diagnósticos** (por que há poucas detecções; o picker; o alarme falso):
+```
+python scripts\analisar_probabilidades.py results\validacao_NZ results\dias_validacao.csv 0.80
+python scripts\prob_em_disparos_stalta.py results\validacao_NZ 195 15
+python scripts\testar_picker.py > results\testar_picker.txt
+python scripts\plot_glitch_hhe.py
+```
+- `analisar_probabilidades.py`: por dia, quantas janelas têm P alta, quantos candidatos existem,
+  quantas detecções saem com o rearme e quanto tempo o gatilho fica travado. Salva
+  `analise_probabilidades.csv` na pasta. Troque `NZ` por `3C` para o outro detector.
+- `prob_em_disparos_stalta.py`: a prob. de P/S que o detector dá aos maiores disparos do STA/LTA
+  de um dia. **Esperado no dia 195:** só o disparo de 23:46:56 (13,8 µm/s) com P ≈ 1; os
+  microssismos (≤ 2 µm/s) com P ≈ 0.
+- `testar_picker.py`: o picker com o HHE real, com o E trocado pelo N e com o E congelado.
+  **Esperado:** prob. ≈ 0,001 nas duas primeiras versões e ≈ 0,99 só com o E congelado (o picker
+  não funciona na ISPT).
+- `plot_glitch_hhe.py`: figura `results/evento_dia164_1503.png`, alarme falso × terremoto real.
+
 ---
 
 ## Mapa dos arquivos
@@ -328,6 +349,11 @@ python scripts\avaliar_validacao.py results\dias_validacao.csv "D:\...\cat_orige
 | `scripts/prob_em_eventos.py` | D7a: prob. do detector em volta de eventos do catálogo |
 | `scripts/e3ws_dia.py` | D7b: E3WS em dias inteiros (detector 3C ou NZ) |
 | `scripts/avaliar_validacao.py` | D7c: avaliação e figuras |
+| `scripts/analisar_probabilidades.py` | D7d: probabilidades e gatilho por dia |
+| `scripts/prob_em_disparos_stalta.py` | D7d: prob. do detector nos maiores disparos do STA/LTA |
+| `scripts/testar_picker.py` | D7d: o picker funciona na ISPT? |
+| `scripts/plot_glitch_hhe.py` | D7d: alarme falso das 15:03 do dia 164 |
+| `RELATORIO_validacao.md` | relatório da validação para o Pablo (3C × NZ) |
 | `functions/` | funções do E3WS na versão do Pablo (StationXML) |
 | `pz/` | `pb_ISPT.xml` (StationXML) e PZ de 2014 |
 | `results/` | saídas pequenas (CSV, TXT, PNG) |

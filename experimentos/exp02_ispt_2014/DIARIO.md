@@ -22,6 +22,10 @@ Teste de 1,5 h em volta do evento USGS de 2014-06-13 18:10:50 (mb 4,4, 11 km da 
 
 ### 3. Picker e modelos de fonte funcionam (GUIA C3)
 
+> **Correção (2026-11-23, item 13):** o picker **não** funciona na ISPT. Este teste usou o M4,6
+> de 13/06, quando o HHE estava congelado. A prob. alta do picker vinha das features NaN do E, um
+> artefato. Os modelos de fonte continuam dando valores razoáveis.
+
 | | USGS | E3WS 3 s | E3WS 46 s |
 |---|---|---|---|
 | Magnitude | 4,4 (mb) | 4,57 | 5,22 |
@@ -198,10 +202,71 @@ uma "mudança" artificial em 08/07. `treinar_DET.py --componentes NZ`; log em `r
      rearme do gatilho (média de 5 prob. de ruído ≥ 0,99);
   2. dia 164 às 15:03:26: detecção com `pick_prob_max` = 0,001 e `hhe_congelado` = False em pleno
      1º semestre. Possível spike do HHE (o HHE "se mexeu" na janela). Ver o sismograma.
+     **Resolvido no item 13:** é um glitch, o instante em que o HHE volta a congelar.
 - Próximos passos: rodar `avaliar_validacao.py` com o NZ, rodar o 3C (com a suspensão desligada)
   e escrever o relatório comparativo.
+
+## 2026-11-23
+
+### 12. Por que o detector NZ detecta tão pouco
+**Hipótese 1, descartada:** gatilho "travado" (sem rearmar). `scripts/analisar_probabilidades.py`
+mostra que o gatilho fica disparado no máximo 0,08 h por dia. A condição de rearme (média de ruído
+≥ 0,99) vale em 99–100 % das janelas. Saída: `results/validacao_NZ/analise_probabilidades.csv`.
+
+**O que as probabilidades mostram:** nos dias calmos, de 0 a 3 janelas por dia (de 86.400) têm
+prob. de P ≥ 0,5. O detector diz "ruído" quase o tempo todo.
+
+**Teste nos maiores disparos do STA/LTA** (`scripts/prob_em_disparos_stalta.py`, dia 195, 1.592 disparos):
+
+| Disparo | Amplitude Z | max P | max S |
+|---|---|---|---|
+| 23:46:56 | 13,8 µm/s | **0,999** | 0,416 |
+| 15:24:17 | 1,3 µm/s | 0,098 | 0,000 |
+| 20:46:29 | 2,3 µm/s | 0,039 | 0,000 |
+| outros 12 | 0,2–0,7 µm/s | ≤ 0,005 | 0,000 |
+
+**Conclusão:** o detector só reage a eventos com amplitude de alguns µm/s ou mais na ISPT.
+Os microssismos (≤ 2 µm/s) recebem P ≈ 0. Causas prováveis:
+1. o `atr_eq` só tem terremotos de **M ≥ 3** (`mag3.0` no nome do arquivo), então o detector
+   aprendeu como é um terremoto desse porte;
+2. a máscara do Pablo (v2) deixou os microssismos no ruído, e o detector aprendeu que eles são "ruído".
+
+Isso combina com o propósito original do E3WS (alerta para eventos de M ~3 ou mais) e com o
+**catálogo**, mas **não serve para contar microssismos**. Para a pergunta da pesquisa, isso precisa
+ser discutido com o Pablo. Opções: aceitar a completude ~M3; testar o detector com a máscara
+estrita (v1), que tira os microssismos do ruído; ou complementar com outro método para os eventos menores.
 
 **Consequência para a análise:** com o detector treinado no ano todo, dá para **detectar** no
 1º semestre. Mas a magnitude, a distância e principalmente o back-azimuth usam o HHE, então as
 estimativas de fonte do 1º semestre devem ser tratadas com cautela (ou usar só a contagem de eventos).
 - `pandas==1.5.3` e `gdown` adicionados ao ambiente.
+
+### 13. Validação completa: com HHE (3C) × sem HHE (NZ) → `RELATORIO_validacao.md`
+- **3C** rodou nos 13 dias em ~60 min por dia, com os 13 dias em paralelo. Log:
+  `results/validacao_3C_log.txt`. **5 detecções**, todas também achadas pelo NZ.
+- **Eventos IG-EPN a < 200 km (9), limiar 0,80:** 3C **2/9**, NZ **5/9**.
+  - **1º semestre:** 3C 0/5, NZ 3/5. O atalho do item 10 se confirma.
+  - **2º semestre:** os dois detectores acham 2/4.
+  - Perdidos pelos dois: 05/01 (184 km, 63 km de profundidade), 02/07 (151 km), 18/07 (M4,1, 108 km)
+    e 05/09 05:38 (104 km, 49 km de profundidade).
+- **Dias calmos:** só 1 detecção em 6 dias (14/07 23:46:56). É um microssismo real (P e S nítidas,
+  S−P ≈ 2,3 s).
+- **15:03 do dia 164 (item 11):** glitch. O HHE estava vivo e volta a congelar
+  (salto para −8,38 milhões de contagens), com um pulso simultâneo em N e Z.
+  - Os dois detectores dispararam nele.
+  - Lição: o "1º semestre congelado" tem trechos curtos com o HHE funcionando, e as transições
+    geram pulsos.
+  - Script: `scripts/plot_glitch_hhe.py`. Figura: `results/evento_dia164_1503.png`.
+- **Picker quebrado** (`scripts/testar_picker.py`, saída em `results/testar_picker.txt`):
+  - em terremotos claros com os 3 componentes normais, a prob. máxima de P fica em 0,001–0,003;
+  - trocar o E por uma cópia do N não muda nada;
+  - com o E congelado, a prob. sobe para 0,98–0,99 (artefato do NaN);
+  - a mesma configuração do `E3WS_Ecuador.py` do Pablo (StationXML, `pb_inst=True`);
+  - a P vira o argmax de uma curva quase plana;
+  - mesmo assim, M (±0,25) e distância saíram razoáveis nos 5 eventos achados.
+  - Perguntar ao Pablo.
+- Diagnóstico do 3C (`analisar_probabilidades.py`):
+  - gatilho nunca travado;
+  - no dia 195, mesmo padrão do NZ: só o evento de 13,8 µm/s tem P ≈ 1 (0,998).
+- **Decisão sugerida:** usar o **NZ** em 2014. Antes de rodar o ano inteiro, discutir com o Pablo o
+  picker e a sensibilidade (item 12).

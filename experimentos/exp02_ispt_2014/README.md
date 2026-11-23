@@ -16,6 +16,7 @@ em cima da zona de SSE, então deve detectar eventos menores e mais próximos.
 | [GUIA.md](GUIA.md) | **Passo a passo reproduzível**: comandos, entradas, saídas, resultado esperado |
 | [CONCEITOS.md](CONCEITOS.md) | Explicação dos termos de sismologia e de aprendizado de máquina |
 | [DIARIO.md](DIARIO.md) | Descobertas em ordem, com os números |
+| [RELATORIO_validacao.md](RELATORIO_validacao.md) | Validação com HHE × sem HHE (para o Pablo) |
 | `scripts/` | Todos os scripts (mapa no fim do GUIA) |
 | `results/` | Saídas pequenas (CSV, TXT, PNG) |
 | `treino_DET/` | Dados de treino grandes, **fora do git** (refaça com o GUIA D2 e D5) |
@@ -31,7 +32,9 @@ em cima da zona de SSE, então deve detectar eventos menores e mais próximos.
 - [x] Features de ruído v2: 1.029.441 janelas úteis em 24 dias, 0,5 % mascaradas (GUIA D5)
 - [x] Treinar o detector da ISPT (GUIA D6): 22,8 min; no teste 90/10, 0 de 90 mil janelas de ruído viraram P (otimista, ver DIARIO item 9)
 - [x] Detector sem HHE (NZ), porque o 3C não enxerga terremotos com o HHE congelado (DIARIO item 10)
-- [ ] Validar os dois detectores (GUIA D7): **NZ concluído**; 3C parado (DIARIO item 11; desligar a suspensão do PC antes de rodar)
+- [x] Validar os dois detectores (GUIA D7): NZ acha 5/9 eventos IG-EPN e 3C acha 2/9 → usar o **NZ**.
+  Relatório: [RELATORIO_validacao.md](RELATORIO_validacao.md)
+- [ ] Discutir com o Pablo: picker genérico não funciona na ISPT; detector não vê microssismos (DIARIO 12–13)
 - [ ] Rodar 09/07–31/12/2014 inteiro e montar o catálogo
 - [ ] Análise da sismicidade e correlação com GNSS
 

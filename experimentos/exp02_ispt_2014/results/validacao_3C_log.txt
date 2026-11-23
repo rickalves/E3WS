@@ -1,1 +1,14 @@
 Dias a processar (13): [67, 152, 155, 195, 241, 262, 2, 5, 164, 183, 199, 213, 248] | limiar 0.80 | detector 3C
+  dia  67: 86389 janelas boas, 0 deteccoes, 59.9 min
+  dia 152: 86389 janelas boas, 0 deteccoes, 60.3 min
+  dia 155: 86389 janelas boas, 0 deteccoes, 60.4 min
+  dia 195: 86389 janelas boas, 1 deteccoes, 60.6 min
+  dia 241: 86379 janelas boas, 0 deteccoes, 60.0 min
+  dia 262: 86378 janelas boas, 0 deteccoes, 60.1 min
+  dia   2: 86389 janelas boas, 0 deteccoes, 60.5 min
+  dia   5: 86389 janelas boas, 0 deteccoes, 60.3 min
+  dia 164: 85964 janelas boas, 1 deteccoes, 60.0 min
+  dia 183: 86390 janelas boas, 0 deteccoes, 60.4 min
+  dia 199: 86389 janelas boas, 0 deteccoes, 59.9 min
+  dia 213: 86367 janelas boas, 2 deteccoes, 60.3 min
+  dia 248: 86390 janelas boas, 1 deteccoes, 41.9 min
