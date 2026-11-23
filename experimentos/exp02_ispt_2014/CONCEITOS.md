@@ -102,3 +102,18 @@ Três etapas, todas com aprendizado de máquina (XGBoost):
   um dia tem 86.400 janelas, então mesmo 0,01 % de erro vira ~9 alarmes falsos por dia.
 - **Limiar (`thr`)**: probabilidade mínima de P para disparar. Mais alto = menos falsos alarmes, mas
   mais eventos pequenos perdidos. O Pablo usou 0,95 no Equador; o exemplo do repositório usa 0,80.
+- **Vazamento de dados (data leakage)**: quando o teste tem exemplos quase iguais aos do treino.
+  - O modelo "reconhece" em vez de "entender", e a nota do teste sai inflada.
+  - Exemplo: janelas de ruído vizinhas compartilham 8 dos 10 s. Se forem sorteadas uma a uma,
+    quase toda janela do teste tem uma "irmã" no treino.
+  - Correção: separar por **dia** (ou por evento), nunca por janela.
+- **Mudança de domínio (domain shift)**: os dados reais são diferentes dos dados de treino.
+  - Pode ser outra estação, outro instrumento, outro nível de ruído ou outra região.
+  - O modelo vai bem no teste, que se parece com o treino, e mal na prática.
+- **Atalho (shortcut learning)**: o modelo aprende uma pista fácil que separa as classes no treino,
+  mas não tem relação com o que queremos.
+  - Exemplo 1: "E congelado ⇒ ruído".
+  - Exemplo 2: "parece o fundo da ISPT ⇒ ruído", porque todo o ruído do treino é da ISPT e nenhum
+    terremoto é.
+  - Um teste com os mesmos vieses do treino **não consegue** revelar um atalho; só dados novos e
+    diferentes revelam.

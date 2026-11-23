@@ -268,5 +268,32 @@ estimativas de fonte do 1º semestre devem ser tratadas com cautela (ou usar só
 - Diagnóstico do 3C (`analisar_probabilidades.py`):
   - gatilho nunca travado;
   - no dia 195, mesmo padrão do NZ: só o evento de 13,8 µm/s tem P ≈ 1 (0,998).
-- **Decisão sugerida:** usar o **NZ** em 2014. Antes de rodar o ano inteiro, discutir com o Pablo o
+- **Decisão sugerida:** usar o **NZ** em 2014.
+
+### 14. Por que o teste deu ~99 % e a validação, 5/9 (conceitos em CONCEITOS.md)
+1. **Vazamento no ruído do teste.** O `treinar_DET.py` (linha 120) sorteia 10 % do ruído **janela a
+   janela**.
+   - As janelas têm 10 s com passo de 2 s, então vizinhas compartilham 8 s.
+   - Além disso, o ruído do teste vem dos mesmos 24 dias do treino.
+   - O "0 de 90.000" mede reconhecimento, não generalização.
+2. **Os terremotos do `atr_eq` não são da ISPT.** A composição foi lida das colunas de metadados:
+   - 167.525 janelas: STEAD 88.685, Japão 52.080, Chile 18.417, SASPe 8.343;
+   - 3.297 estações; **0 da ISPT** e só 303 janelas de estações no Equador;
+   - M de 3,0 a 9,0 (mediana 3,9) e distância de 1 a 200 km (mediana 103 km);
+   - há 25.162 janelas de 100–200 km com M3,5–4,2, ou seja, eventos como os que foram perdidos
+     existem no treino, mas registrados em outras estações.
+   - O teste usa terremotos dessas mesmas bases, por isso parece fácil.
+3. **Atalho provável: "fundo da ISPT ⇒ ruído".** Todo o ruído é da ISPT e nenhum terremoto é.
+   - Um evento fraco na ISPT (distante ou pequeno) carrega o fundo da ISPT e vira "ruído".
+   - Só os eventos que dominam o fundo passam. Isso explica as perdas a > 100 km e os microssismos
+     com P ≈ 0 (item 12).
+   - É o mesmo tipo de erro do HHE (item 10).
+4. **Amostra pequena:** com 9 eventos, 5/9 tem incerteza grande (intervalo de 95 % ≈ 21–86 %).
+   - Algumas perdas podem nem ser visíveis na ISPT; falta conferir a SNR dos 4 eventos perdidos.
+- **Próximos passos possíveis (discutir com o Pablo):**
+  - teste honesto, separando o ruído por dia;
+  - conferir a SNR dos eventos perdidos;
+  - pôr terremotos **registrados na ISPT** no treino (eventos IG-EPN de outros anos);
+  - ou somar ruído da ISPT às formas de onda dos terremotos do treino (data augmentation; exige as
+    formas de onda, não só as features). Antes de rodar o ano inteiro, discutir com o Pablo o
   picker e a sensibilidade (item 12).
