@@ -354,6 +354,8 @@ python scripts\plot_glitch_hhe.py
 | `scripts/testar_picker.py` | D7d: o picker funciona na ISPT? |
 | `scripts/plot_glitch_hhe.py` | D7d: alarme falso das 15:03 do dia 164 |
 | `RELATORIO_validacao.md` | relatório da validação para o Pablo (3C × NZ) |
+| `scripts/figuras_relatorio.py` | figuras para o Pablo: matrizes de confusão e tabela comparativa (`results/fig_*.png`) |
+| `scripts/gerar_relatorio_docx.py` | relatório Word do treino e da validação (`RELATORIO_treino_validacao_ISPT2014.docx`; precisa de `pip install python-docx`; rode antes o `figuras_relatorio.py`) |
 | `functions/` | funções do E3WS na versão do Pablo (StationXML) |
 | `pz/` | `pb_ISPT.xml` (StationXML) e PZ de 2014 |
 | `results/` | saídas pequenas (CSV, TXT, PNG) |
