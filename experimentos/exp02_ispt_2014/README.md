@@ -16,7 +16,8 @@ em cima da zona de SSE, então deve detectar eventos menores e mais próximos.
 | [GUIA.md](GUIA.md) | **Passo a passo reproduzível**: comandos, entradas, saídas, resultado esperado |
 | [CONCEITOS.md](CONCEITOS.md) | Explicação dos termos de sismologia e de aprendizado de máquina |
 | [DIARIO.md](DIARIO.md) | Descobertas em ordem, com os números |
-| [RELATORIO_validacao.md](RELATORIO_validacao.md) | Validação com HHE × sem HHE (para o Pablo) |
+| [RELATORIO_treino_validacao_ISPT2014.md](RELATORIO_treino_validacao_ISPT2014.md) | **Relatório principal** do treino e da validação para o Pablo (também em `.docx`) |
+| [RELATORIO_validacao.md](RELATORIO_validacao.md) | Primeira versão do relatório (só a validação) |
 | `scripts/` | Todos os scripts (mapa no fim do GUIA) |
 | `results/` | Saídas pequenas (CSV, TXT, PNG) |
 | `treino_DET/` | Dados de treino grandes, **fora do git** (refaça com o GUIA D2 e D5) |

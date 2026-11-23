@@ -33,7 +33,7 @@ t3c = re.search(r"tempo total ([\d.]+) min", log3c).group(1)   # tempo de treino
 tnz = re.search(r"tempo total ([\d.]+) min", lognz).group(1)   # tempo de treino NZ
 cat = pd.read_csv("results/avaliacao_validacao/eventos_catalogo.csv")   # eventos IG-EPN da validacao
 mil = lambda x: "{:,}".format(int(x)).replace(",", ".")   # 1234567 -> "1.234.567"
-virg = lambda x, n=2: ("%.*f" % (n, x)).replace(".", ",")   # 0.5 -> "0,50"
+virg = lambda x, n=2: ("%.*f" % (n, x + 1e-9)).replace(".", ",")   # 0.5 -> "0,50" (+1e-9: 0,945 arredonda para 0,95)
 
 # ---------------- Funcoes de formatacao ----------------
 doc = Document()                                 # documento novo
