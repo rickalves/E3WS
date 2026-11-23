@@ -31,7 +31,7 @@ em cima da zona de SSE, então deve detectar eventos menores e mais próximos.
 - [x] Features de ruído v2: 1.029.441 janelas úteis em 24 dias, 0,5 % mascaradas (GUIA D5)
 - [x] Treinar o detector da ISPT (GUIA D6): 22,8 min; no teste 90/10, 0 de 90 mil janelas de ruído viraram P (otimista, ver DIARIO item 9)
 - [x] Detector sem HHE (NZ), porque o 3C não enxerga terremotos com o HHE congelado (DIARIO item 10)
-- [ ] Validar os dois detectores (GUIA D7): **NZ concluído**; 3C parado (DIARIO item 11; investigar a lentidão antes)
+- [ ] Validar os dois detectores (GUIA D7): **NZ concluído**; 3C parado (DIARIO item 11; desligar a suspensão do PC antes de rodar)
 - [ ] Rodar 09/07–31/12/2014 inteiro e montar o catálogo
 - [ ] Análise da sismicidade e correlação com GNSS
 

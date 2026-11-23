@@ -186,17 +186,20 @@ uma "mudança" artificial em 08/07. `treinar_DET.py --componentes NZ`; log em `r
   (incluindo os dois eventos do catálogo, 18:10:48 e 19:16:17); dias 2, 213 e 248 com 1–2; dias 5, 183
   e 199 com 0.
 - **Com HHE (3C): não rodou.** Foi interrompida logo no início; nenhum dia concluído.
-- **Problema de desempenho:** o log mostra ~2.141 min (~36 h) por dia. A estimativa era 45–60 min
-  (25 ms por janela × 86.400 janelas, medido no teste). Investigar antes de rodar o 3C:
-  `st.slice` sobre o dia inteiro com dados mascarados, ou 13 processos disputando a máquina.
+- **Tempo:** o log mostra ~2.141 min (~36 h) por dia, mas **o computador hibernou** durante a
+  rodada, e o tempo medido inclui o período hibernado (os 13 dias terminaram juntos, com o mesmo
+  tempo). Não é problema do script. O processamento retomou ao acordar e os 13 dias foram gravados.
+  Estimativa sem hibernação: 45–60 min por rodada. **Antes de rodadas longas, desligar a suspensão:**
+  `powercfg /change standby-timeout-ac 0` e `powercfg /change hibernate-timeout-ac 0` (para voltar
+  depois, use os valores anteriores, ex. `30`).
 - **Pontos para analisar:**
   1. a sensibilidade parece baixa (nenhuma detecção nos dias calmos, apesar dos muitos microssismos
      vistos no item 6). Conferir as probabilidades salvas (`prob_2014DDD.csv.gz`) e a regra de
      rearme do gatilho (média de 5 prob. de ruído ≥ 0,99);
   2. dia 164 às 15:03:26: detecção com `pick_prob_max` = 0,001 e `hhe_congelado` = False em pleno
      1º semestre. Possível spike do HHE (o HHE "se mexeu" na janela). Ver o sismograma.
-- Próximos passos: rodar `avaliar_validacao.py` com o NZ, corrigir o desempenho, rodar o 3C e
-  escrever o relatório comparativo.
+- Próximos passos: rodar `avaliar_validacao.py` com o NZ, rodar o 3C (com a suspensão desligada)
+  e escrever o relatório comparativo.
 
 **Consequência para a análise:** com o detector treinado no ano todo, dá para **detectar** no
 1º semestre. Mas a magnitude, a distância e principalmente o back-azimuth usam o HHE, então as
